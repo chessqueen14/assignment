@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Website - Yashaswi K</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        .header h2 {
+            font-size: 28px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .profile-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #667eea;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        .section h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        .section p {
+            text-align: justify;
+            font-size: 16px;
+        }
+        .skills-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .skills-list li {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            transition: transform 0.3s;
+        }
+        .skills-list li:hover {
+            transform: translateY(-3px);
+        }
+        .hobbies-list {
+            list-style: none;
+            counter-reset: hobbies-counter;
+        }
+        .hobbies-list li {
+            position: relative;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding-left: 50px;
+            transition: background 0.3s;
+        }
+        .hobbies-list li:hover {
+            background: #e9ecef;
+        }
+        .hobbies-list li::before {
+            counter-increment: hobbies-counter;
+            content: counter(hobbies-counter);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .links-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+        .links-section a {
+            display: inline-block;
+            margin: 10px 15px 10px 0;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+        .links-section a:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .social-icons a {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        .social-icons a:hover {
+            background: #667eea;
+            color: white;
+        }
+        .quote {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-style: italic;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to My First Website</h1>
+            <h2>👋 Hello, I'm Yashaswi K</h2>
+        </div>
+
+        <div class="content">
+            
+            <!-- Profile Image Section -->
+            <div class="profile-section">
+                <img src="https://cbin.b-cdn.net/img/YA/Yashaswi_CQPZM_848x561.jpeg" alt="My Profile Photo" class="profile-image">
+            </div>
+
+            <!-- About Me Section -->
+            <div class="section">
+                <h3>📝 About Me</h3>
+                <p>
+                    Hello! I am an MCA (Master of Computer Applications) student at Srinivas Institute 
+                    of Technology, Mangalore. I am passionate about web development and programming, 
+                    and I enjoy learning new technologies to improve my skills. I believe in 
+                    continuous learning and always look for opportunities to grow professionally.
+                </p>
+            </div>
+
+            <!-- Skills Section with Unordered List -->
+            <div class="section">
+                <h3>💻 My Skills</h3>
+                <ul class="skills-list">
+                    <li>HTML & CSS</li>
+                    <li>JavaScript</li>
+                    <li>C Programming</li>
+                    <li>Python</li>
+                    <li>MySQL</li>
+                    <li>Web Development</li>
+                </ul>
+            </div>
+
+            <!-- Hobbies Section with Ordered List -->
+            <div class="section">
+                <h3>🎯 My Hobbies</h3>
+                <ol class="hobbies-list">
+                    <li><strong>Playing Chess</strong> - I enjoy strategic thinking and have participated in several chess tournaments</li>
+                    <li><strong>Listening to Music</strong> - Music helps me relax and stay motivated</li>
+                    <li><strong>Traveling</strong> - I love exploring new places and learning about different cultures</li>
+                    <li><strong>Dancing</strong> - I actively participate in cultural events and dance programs</li>
+                    <li><strong>Reading Tech Blogs</strong> - Staying updated with the latest technology trends</li>
+                </ol>
+            </div>
+
+            <!-- Links Section -->
+            <div class="section">
+                <h3>🔗 My Links</h3>
+                <div class="links-section">
+                    <p>Here are some of my favorite websites and resources:</p>
+                    <br>
+                    <a href="https://www.google.com" target="_blank">🔍 Google</a>
+                    <a href="https://www.wikipedia.org" target="_blank">📚 Wikipedia</a>
+                    <a href="https://github.com" target="_blank">💻 GitHub</a>
+                    
+                    <div class="social-icons">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favorite Quote -->
+            <div class="quote">
+                "The only way to do great work is to love what you do." - Steve Jobs
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

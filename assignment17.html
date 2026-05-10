@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Server - API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #00ff88;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .server-status {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #00ff88;
+        }
+
+        .server-status.online {
+            border-color: #00ff88;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .routes-section {
+            background: #1a1a2e;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .routes-section h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .route-card {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .route-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-3px);
+        }
+
+        .route-path {
+            color: #00ff88;
+            font-family: monospace;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .route-desc {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .response-section {
+            background: #1a1a2e;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .response-header h2 {
+            color: #00ff88;
+            font-size: 24px;
+        }
+
+        .current-route {
+            background: #16213e;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #00ff88;
+        }
+
+        .response-box {
+            background: #0a0a0f;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 300px;
+            max-height: 500px;
+            overflow: auto;
+            white-space: pre-wrap;
+            color: #00ff88;
+        }
+
+        .response-box.error {
+            color: #ff4757;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #16213e;
+            border-top: 3px solid #00ff88;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .custom-request {
+            background: #1a1a2e;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .custom-request h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px 20px;
+            background: #16213e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-family: monospace;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+
+        .input-group button {
+            padding: 12px 30px;
+            background: #00ff88;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .input-group button:hover {
+            background: #00cc6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Hello Server</h1>
+        <p class="subtitle">Node.js HTTP Server API Tester</p>
+
+        <div class="server-status online">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                Server Running on http://localhost:3001
+            </div>
+        </div>
+
+        <div class="routes-section">
+            <h2>📡 Available Routes</h2>
+            <div class="routes-grid">
+                <div class="route-card" onclick="fetchRoute('/')">
+                    <div class="route-path">/</div>
+                    <div class="route-desc">Welcome message & endpoints list</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/hello')">
+                    <div class="route-path">/hello</div>
+                    <div class="route-desc">Returns a greeting message</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/time')">
+                    <div class="route-path">/time</div>
+                    <div class="route-desc">Current server time</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/date')">
+                    <div class="route-path">/date</div>
+                    <div class="route-desc">Current server date</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/message')">
+                    <div class="route-path">/message</div>
+                    <div class="route-desc">Default message</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/message?msg=Hello%20World')">
+                    <div class="route-path">/message?msg=...</div>
+                    <div class="route-desc">Custom message (query param)</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/api/status')">
+                    <div class="route-path">/api/status</div>
+                    <div class="route-desc">Server status & uptime</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/api/info')">
+                    <div class="route-path">/api/info</div>
+                    <div class="route-desc">Server information</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/api/users')">
+                    <div class="route-path">/api/users</div>
+                    <div class="route-desc">Sample user data</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/api/products')">
+                    <div class="route-path">/api/products</div>
+                    <div class="route-desc">Sample product data</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/echo')">
+                    <div class="route-path">/echo</div>
+                    <div class="route-desc">Echo request details</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/greet?name=John')">
+                    <div class="route-path">/greet?name=...</div>
+                    <div class="route-desc">Personalized greeting</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/json')">
+                    <div class="route-path">/json</div>
+                    <div class="route-desc">Sample JSON data</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/random')">
+                    <div class="route-path">/random</div>
+                    <div class="route-desc">Random number (1-100)</div>
+                </div>
+                <div class="route-card" onclick="fetchRoute('/math?a=15&b=25')">
+                    <div class="route-path">/math?a=...&b=...</div>
+                    <div class="route-desc">Math addition</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="custom-request">
+            <h2>🔧 Custom Request</h2>
+            <div class="input-group">
+                <input type="text" id="customUrl" placeholder="Enter route (e.g., /hello or /message?msg=Hi)">
+                <button onclick="fetchCustom()">Send Request</button>
+            </div>
+        </div>
+
+        <div class="response-section">
+            <div class="response-header">
+                <h2>📥 Response</h2>
+                <span class="current-route" id="currentRoute">/</span>
+            </div>
+            <div class="response-box" id="responseBox">
+                Click any route above to see the response...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3001';
+
+        async function fetchRoute(route) {
+            document.getElementById('currentRoute').textContent = route;
+            const responseBox = document.getElementById('responseBox');
+            
+            responseBox.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+
+            try {
+                const response = await fetch(BASE_URL + route);
+                const data = await response.json();
+                
+                responseBox.classList.remove('error');
+                responseBox.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseBox.classList.add('error');
+                responseBox.textContent = 'Error: ' + error.message + '\n\nMake sure the Node server is running:\n  node helloserver.js';
+            }
+        }
+
+        async function fetchCustom() {
+            const url = document.getElementById('customUrl').value.trim();
+            if (!url) return;
+            
+            fetchRoute(url.startsWith('/') ? url : '/' + url);
+        }
+
+        // Fetch home route on load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRoute('/');
+        });
+    </script>
+</body>
+</html>

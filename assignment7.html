@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Manager</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        input {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-add {
+            background: #667eea;
+            color: white;
+        }
+        .btn-add:hover {
+            background: #5a6fd6;
+        }
+        .btn-clear {
+            background: #ff6b6b;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #ff5252;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .grade {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .grade-a-plus { background: #28a745; color: white; }
+        .grade-a { background: #20c997; color: white; }
+        .grade-b { background: #17a2b8; color: white; }
+        .grade-c { background: #ffc107; color: #333; }
+        .grade-d { background: #fd7e14; color: white; }
+        .grade-f { background: #dc3545; color: white; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const StudentManager = () => {
+            const [students, setStudents] = useState([
+                { id: 1, name: "Alice", marks: [85, 90, 78, 92, 88] },
+                { id: 2, name: "Bob", marks: [72, 65, 80, 70, 75] },
+                { id: 3, name: "Charlie", marks: [95, 98, 92, 96, 94] },
+                { id: 4, name: "Diana", marks: [60, 70, 65, 68, 72] }
+            ]);
+            const [name, setName] = useState("");
+            const [marksInput, setMarksInput] = useState("");
+
+            const calculateAverage = (marks) => {
+                if (!marks || marks.length === 0) return 0;
+                return (marks.reduce((a, b) => a + b, 0) / marks.length).toFixed(2);
+            };
+
+            const getGrade = (average) => {
+                if (average >= 90) return { grade: "A+", class: "grade-a-plus" };
+                if (average >= 80) return { grade: "A", class: "grade-a" };
+                if (average >= 70) return { grade: "B", class: "grade-b" };
+                if (average >= 60) return { grade: "C", class: "grade-c" };
+                if (average >= 50) return { grade: "D", class: "grade-d" };
+                return { grade: "F", class: "grade-f" };
+            };
+
+            const getClassAverage = () => {
+                if (students.length === 0) return 0;
+                const total = students.reduce((sum, s) => sum + parseFloat(calculateAverage(s.marks)), 0);
+                return (total / students.length).toFixed(2);
+            };
+
+            const addStudent = () => {
+                if (!name.trim() || !marksInput.trim()) return;
+                const marks = marksInput.split(",").map(m => parseFloat(m.trim())).filter(m => !isNaN(m));
+                if (marks.length === 0) return;
+                
+                const newStudent = {
+                    id: students.length + 1,
+                    name: name.trim(),
+                    marks: marks
+                };
+                setStudents([...students, newStudent]);
+                setName("");
+                setMarksInput("");
+            };
+
+            const deleteStudent = (id) => {
+                setStudents(students.filter(s => s.id !== id));
+            };
+
+            const topPerformer = () => {
+                if (students.length === 0) return null;
+                return students.reduce((top, s) => {
+                    const avg = parseFloat(calculateAverage(s.marks));
+                    const topAvg = parseFloat(calculateAverage(top.marks));
+                    return avg > topAvg ? s : top;
+                });
+            };
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🎓 Student Marks Manager</h1>
+                    </div>
+                    
+                    <div className="content">
+                        <div className="form-section">
+                            <h3>➕ Add New Student</h3>
+                            <div className="input-group">
+                                <input 
+                                    type="text" 
+                                    placeholder="Student Name" 
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                                <input 
+                                    type="text" 
+                                    placeholder="Marks (comma separated)" 
+                                    value={marksInput}
+                                    onChange={(e) => setMarksInput(e.target.value)}
+                                />
+                                <button className="btn btn-add" onClick={addStudent}>Add Student</button>
+                            </div>
+                            <small style={{ color: "#666" }}>Example: 85, 90, 78, 92, 88</small>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Marks</th>
+                                    <th>Average</th>
+                                    <th>Grade</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {students.map(student => {
+                                    const avg = calculateAverage(student.marks);
+                                    const { grade, gradeClass } = getGrade(avg);
+                                    return (
+                                        <tr key={student.id}>
+                                            <td>{student.id}</td>
+                                            <td><strong>{student.name}</strong></td>
+                                            <td>[{student.marks.join(", ")}]</td>
+                                            <td>{avg}</td>
+                                            <td><span className={`grade ${gradeClass}`}>{grade}</span></td>
+                                            <td>
+                                                <button 
+                                                    className="btn btn-clear" 
+                                                    style={{ padding: "8px 15px", fontSize: "12px" }}
+                                                    onClick={() => deleteStudent(student.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+
+                        <div className="stats">
+                            <div className="stat-card">
+                                <h4>Total Students</h4>
+                                <div className="value">{students.length}</div>
+                            </div>
+                            <div className="stat-card">
+                                <h4>Class Average</h4>
+                                <div className="value">{getClassAverage()}</div>
+                            </div>
+                            <div className="stat-card">
+                                <h4>Top Performer</h4>
+                                <div className="value">{topPerformer()?.name || "-"}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<StudentManager />);
+    </script>
+</body>
+</html>

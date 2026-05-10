@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 24: Admin Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0b1220 0%, #1f2937 100%); color: #f8fafc; min-height: 100vh; padding: 24px; }
+        .dashboard { max-width: 1200px; margin: 0 auto; background: #111827; border-radius: 28px; overflow: hidden; box-shadow: 0 35px 100px rgba(0,0,0,0.35); }
+        .header { padding: 34px 36px; background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%); text-align: center; }
+        .header h1 { font-size: 2.6rem; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 1rem; max-width: 900px; margin: 0 auto; }
+        .content { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; padding: 28px; }
+        @media (max-width: 980px) { .content { grid-template-columns: 1fr; } }
+        .panel { background: #111827; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 24px; padding: 24px; }
+        .panel h2 { margin-bottom: 18px; font-size: 1.5rem; }
+        .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 24px; }
+        .metric-card { background: #1f2937; border-radius: 18px; padding: 22px; border: 1px solid rgba(148, 163, 184, 0.12); }
+        .metric-card h3 { margin-bottom: 12px; font-size: 1rem; color: #cbd5e1; }
+        .metric-card p { font-size: 2rem; font-weight: 700; color: #fff; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .table th, .table td { padding: 14px 16px; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+        .table th { text-align: left; color: #cbd5e1; font-weight: 700; }
+        .table td { color: #e5e7eb; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s ease, transform 0.2s ease; border: none; }
+        .btn:hover { transform: translateY(-1px); opacity: 0.92; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-secondary { background: #475569; color: white; }
+        .badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; }
+        .badge.admin { background: #1e3a8a; color: #dbeafe; }
+        .badge.user { background: #113f1e; color: #d1fae5; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: #cbd5e1; }
+        .form-group input, .form-group select { width: 100%; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.2); background: #0f172a; color: #e2e8f0; font-size: 0.95rem; }
+        .form-group textarea { min-height: 110px; resize: vertical; }
+        .task-card { background: #111827; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 20px; padding: 18px; margin-bottom: 16px; }
+        .task-card strong { display: block; margin-bottom: 10px; color: #fff; }
+        .task-card p { color: #cbd5e1; line-height: 1.6; }
+        .task-card small { color: #94a3b8; }
+        .info-box { background: #111827; border-radius: 20px; border: 1px solid rgba(148, 163, 184, 0.12); padding: 20px; margin-top: 20px; }
+        .info-box h3 { margin-bottom: 14px; }
+        .info-box li { margin-bottom: 10px; line-height: 1.7; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const AdminDashboard = () => {
+            const [users, setUsers] = useState([]);
+            const [tasks, setTasks] = useState([]);
+            const [selectedUser, setSelectedUser] = useState('');
+            const [selectedRole, setSelectedRole] = useState('user');
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState('');
+            const API_BASE = 'demo://localhost';
+
+            useEffect(() => {
+                loadDashboard();
+            }, []);
+
+            const notify = (text) => {
+                setMessage(text);
+                setTimeout(() => setMessage(''), 4500);
+            };
+
+            const loadDashboard = async () => {
+                setLoading(true);
+                try {
+                    // Demo: Load dashboard data from localStorage (Full Stack Web Development)
+                    const storedUsers = localStorage.getItem('demoUsers');
+                    const storedTasks = localStorage.getItem('demoTasks');
+
+                    if (storedUsers && storedTasks) {
+                        const usersData = JSON.parse(storedUsers);
+                        const tasksData = JSON.parse(storedTasks);
+                        setUsers(usersData);
+                        setTasks(tasksData);
+                        if (usersData.length) setSelectedUser(usersData[0].id);
+                    } else {
+                        const demoUsers = [
+                            { id: 'u1', name: 'Admin Demo', email: 'admin@example.com', role: 'admin' },
+                            { id: 'u2', name: 'User Demo', email: 'user@example.com', role: 'user' },
+                            { id: 'u3', name: 'Manager Demo', email: 'manager@example.com', role: 'user' }
+                        ];
+                        const demoTasks = [
+                            { id: 't1', title: 'Review user permissions', owner: 'admin@example.com', status: 'Pending' },
+                            { id: 't2', title: 'Approve new features', owner: 'user@example.com', status: 'In Progress' },
+                            { id: 't3', title: 'Update documentation', owner: 'manager@example.com', status: 'Completed' }
+                        ];
+                        setUsers(demoUsers);
+                        setTasks(demoTasks);
+                        localStorage.setItem('demoUsers', JSON.stringify(demoUsers));
+                        localStorage.setItem('demoTasks', JSON.stringify(demoTasks));
+                        setSelectedUser('u1');
+                    }
+                } catch (error) {
+                    console.warn(error);
+                    setUsers([
+                        { id: 'u1', name: 'Admin Demo', email: 'admin@example.com', role: 'admin' }
+                    ]);
+                    setTasks([
+                        { id: 't1', title: 'Demo admin task', owner: 'admin@example.com', status: 'Pending' }
+                    ]);
+                    setSelectedUser('u1');
+                    notify('Using demo admin data from localStorage.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const changeUserRole = async () => {
+                if (!selectedUser) return;
+                try {
+                    // Demo: Update user role in localStorage (Full Stack Web Development)
+                    const storedUsers = JSON.parse(localStorage.getItem('demoUsers') || '[]');
+                    const updatedUsers = storedUsers.map(user =>
+                        user.id === selectedUser ? { ...user, role: selectedRole } : user
+                    );
+                    localStorage.setItem('demoUsers', JSON.stringify(updatedUsers));
+                    setUsers(updatedUsers);
+                    notify(`Role updated to ${selectedRole.toUpperCase()}.`);
+                } catch (error) {
+                    console.error(error);
+                    notify('Unable to update role in demo mode.');
+                }
+            };
+
+            const deleteUser = async () => {
+                if (!selectedUser) return;
+                if (!confirm('Delete selected user? This cannot be undone.')) return;
+                try {
+                    // Demo: Delete user from localStorage (Full Stack Web Development)
+                    const storedUsers = JSON.parse(localStorage.getItem('demoUsers') || '[]');
+                    const updatedUsers = storedUsers.filter(user => user.id !== selectedUser);
+                    localStorage.setItem('demoUsers', JSON.stringify(updatedUsers));
+                    setUsers(updatedUsers);
+                    setSelectedUser(updatedUsers.length > 0 ? updatedUsers[0].id : '');
+                    notify('User deleted successfully.');
+                } catch (error) {
+                    console.error(error);
+                    notify('Unable to delete user in demo mode.');
+                }
+            };
+
+            return (
+                <div className="dashboard">
+                    <div className="header">
+                        <h1>📊 Admin Dashboard</h1>
+                        <p>Assignment 24: Manage users and advanced task controls for administrators.</p>
+                    </div>
+
+                    <div className="content">
+                        <section className="panel">
+                            <h2>Overview</h2>
+                            <div className="summary-grid">
+                                <div className="metric-card">
+                                    <h3>Total Users</h3>
+                                    <p>{users.length}</p>
+                                </div>
+                                <div className="metric-card">
+                                    <h3>Total Tasks</h3>
+                                    <p>{tasks.length}</p>
+                                </div>
+                                <div className="metric-card">
+                                    <h3>Admins</h3>
+                                    <p>{users.filter(u => u.role === 'admin').length}</p>
+                                </div>
+                                <div className="metric-card">
+                                    <h3>Regular Users</h3>
+                                    <p>{users.filter(u => u.role === 'user').length}</p>
+                                </div>
+                            </div>
+
+                            {message && <div className="info-box"><strong>{message}</strong></div>}
+
+                            <h2>Task Activity</h2>
+                            {tasks.map(task => (
+                                <div key={task.id} className="task-card">
+                                    <strong>{task.title}</strong>
+                                    <p>Owner: {task.owner || 'Unknown'}</p>
+                                    <small>Status: {task.status || 'Pending'}</small>
+                                </div>
+                            ))}
+                        </section>
+
+                        <aside className="panel">
+                            <h2>User Management</h2>
+                            <div className="form-group">
+                                <label htmlFor="userSelect">Select User</label>
+                                <select id="userSelect" value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
+                                    {users.map(user => (
+                                        <option key={user.id} value={user.id}>{user.name} ({user.email})</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="roleSelect">Set Role</label>
+                                <select id="roleSelect" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div className="form-group" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <button className="btn btn-primary" onClick={changeUserRole} disabled={!selectedUser || loading}>Update Role</button>
+                                <button className="btn btn-danger" onClick={deleteUser} disabled={!selectedUser || loading}>Delete User</button>
+                            </div>
+
+                            <div className="info-box">
+                                <h3>Admin Actions</h3>
+                                <ul>
+                                    <li>Update user roles to control access.</li>
+                                    <li>Delete users when account removal is needed.</li>
+                                    <li>Review task ownership and status from the overview.</li>
+                                    <li>Use backend role checks in addition to frontend UI guards.</li>
+                                </ul>
+                            </div>
+
+                            <div className="info-box">
+                                <h3>Recommended Endpoints</h3>
+                                <ul>
+                                    <li>GET /api/users</li>
+                                    <li>PUT /api/users/:id/role</li>
+                                    <li>DELETE /api/users/:id</li>
+                                    <li>GET /api/tasks</li>
+                                </ul>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AdminDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 25: Full Stack Integration</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; color: #e2e8f0; padding: 24px; }
+        .container { max-width: 1180px; margin: 0 auto; background: #111827; border-radius: 24px; box-shadow: 0 30px 90px rgba(0,0,0,0.4); overflow: hidden; }
+        .header { padding: 36px; background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%); text-align: center; }
+        .header h1 { font-size: 2.75rem; margin-bottom: 12px; }
+        .header p { opacity: 0.92; font-size: 1rem; max-width: 900px; margin: 0 auto; }
+        .content { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; padding: 32px; }
+        @media (max-width: 940px) { .content { grid-template-columns: 1fr; } }
+        .panel { background: #0f172a; border-radius: 22px; border: 1px solid rgba(148, 163, 184, 0.2); padding: 24px; }
+        .panel h2 { margin-bottom: 18px; font-size: 1.45rem; }
+        .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 24px; }
+        .summary-card { background: #111827; border-radius: 18px; padding: 22px; border: 1px solid rgba(148, 163, 184, 0.12); }
+        .summary-card h3 { color: #cbd5e1; margin-bottom: 10px; }
+        .summary-card p { font-size: 2rem; font-weight: 700; color: white; }
+        .section { margin-bottom: 24px; }
+        .section h3 { margin-bottom: 12px; font-size: 1.15rem; }
+        .list { list-style: none; padding-left: 0; display: grid; gap: 12px; }
+        .list-item { background: #111827; border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.12); padding: 18px; }
+        .list-item strong { display: block; margin-bottom: 8px; color: #fff; }
+        .list-item p { color: #cbd5e1; line-height: 1.7; }
+        .button { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; border-radius: 14px; border: none; background: #2563eb; color: white; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; }
+        .button:hover { transform: translateY(-1px); }
+        .button.secondary { background: #475569; }
+        .button.danger { background: #dc2626; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; font-weight: 700; }
+        .badge.success { background: #164e63; color: #dbeafe; }
+        .badge.warning { background: #78350f; color: #fed7aa; }
+        .info-box { background: #111827; border-radius: 18px; border: 1px solid rgba(148, 163, 184, 0.12); padding: 22px; line-height: 1.75; }
+        .info-box h3 { margin-bottom: 14px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const FullStackIntegration = () => {
+            const [backendStatus, setBackendStatus] = useState('Checking connection...');
+            const [user, setUser] = useState(null);
+            const [tasks, setTasks] = useState([]);
+            const [notifications, setNotifications] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const API_BASE = 'demo://localhost';
+
+            useEffect(() => {
+                initialize();
+            }, []);
+
+            const addNotification = (message) => {
+                setNotifications((prev) => [message, ...prev].slice(0, 5));
+            };
+
+            const initialize = async () => {
+                try {
+                    // Demo: Simulate backend health check (Full Stack Web Development)
+                    setBackendStatus('✅ Demo mode active - localStorage backend');
+                } catch (error) {
+                    console.warn(error);
+                    setBackendStatus('❌ Demo mode initialization failed');
+                }
+                await Promise.all([loadUserProfile(), loadTasks()]);
+            };
+
+            const loadUserProfile = async () => {
+                try {
+                    // Demo: Load user profile from localStorage (Full Stack Web Development)
+                    const storedUser = localStorage.getItem('demoUser');
+                    if (storedUser) {
+                        setUser(JSON.parse(storedUser));
+                    } else {
+                        const demoUser = { name: 'Demo Admin', role: 'admin', email: 'admin@example.com' };
+                        setUser(demoUser);
+                        localStorage.setItem('demoUser', JSON.stringify(demoUser));
+                    }
+                } catch (error) {
+                    console.warn(error);
+                    setUser({ name: 'Demo Admin', role: 'admin', email: 'admin@example.com' });
+                    addNotification('Using demo profile data from localStorage.');
+                }
+            };
+
+            const loadTasks = async () => {
+                setLoading(true);
+                try {
+                    // Demo: Load tasks from localStorage (Full Stack Web Development)
+                    const storedTasks = localStorage.getItem('demoTasks');
+                    if (storedTasks) {
+                        setTasks(JSON.parse(storedTasks));
+                    } else {
+                        const demoTasks = [
+                            { id: 'demo-1', title: 'Review full stack flow', completed: false, owner: 'admin@example.com' },
+                            { id: 'demo-2', title: 'Verify API integration', completed: true, owner: 'user@example.com' },
+                            { id: 'demo-3', title: 'Test localStorage persistence', completed: false, owner: 'admin@example.com' }
+                        ];
+                        setTasks(demoTasks);
+                        localStorage.setItem('demoTasks', JSON.stringify(demoTasks));
+                    }
+                } catch (error) {
+                    console.warn(error);
+                    setTasks([
+                        { id: 'demo-1', title: 'Review full stack flow', completed: false, owner: 'admin@example.com' },
+                        { id: 'demo-2', title: 'Verify API integration', completed: true, owner: 'user@example.com' }
+                    ]);
+                    addNotification('Displaying demo tasks from localStorage.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const logout = () => {
+                localStorage.removeItem('token');
+                setUser(null);
+                addNotification('Logged out locally. In production, clear auth cookies/token.');
+            };
+
+            const renderTaskStatus = (task) => task.completed ? <span className="badge success">Completed</span> : <span className="badge warning">Pending</span>;
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🌐 Full Stack Integration</h1>
+                        <p>Assignment 25: Integrate frontend, backend, authentication, role-based access, and deployment readiness in one complete system.</p>
+                    </div>
+
+                    <div className="content">
+                        <section className="panel">
+                            <h2>Application Summary</h2>
+                            <div className="summary-grid">
+                                <div className="summary-card">
+                                    <h3>Backend Status</h3>
+                                    <p>{backendStatus}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Logged In User</h3>
+                                    <p>{user ? `${user.name} (${user.role})` : 'Guest'}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Available Tasks</h3>
+                                    <p>{tasks.length}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Notifications</h3>
+                                    <p>{notifications.length}</p>
+                                </div>
+                            </div>
+
+                            <div className="section">
+                                <h3>Recent Activity</h3>
+                                <ul className="list">
+                                    {notifications.length === 0 && <li className="list-item"><p>No recent events yet.</p></li>}
+                                    {notifications.map((item, index) => (
+                                        <li key={index} className="list-item"><p>{item}</p></li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="section">
+                                <h3>Task Overview</h3>
+                                <ul className="list">
+                                    {tasks.map((task) => (
+                                        <li key={task.id} className="list-item">
+                                            <strong>{task.title}</strong>
+                                            <p>Owner: {task.owner || 'Unknown'}</p>
+                                            {renderTaskStatus(task)}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </section>
+
+                        <aside className="panel">
+                            <h2>Integration Checklist</h2>
+                            <div className="info-box">
+                                <h3>Frontend</h3>
+                                <ul>
+                                    <li>React-based UI rendering and state management.</li>
+                                    <li>Conditional role-based display and user notifications.</li>
+                                    <li>Backend health check and resilient data loading.</li>
+                                </ul>
+                            </div>
+
+                            <div className="info-box">
+                                <h3>Backend</h3>
+                                <ul>
+                                    <li>API routes for health, authentication, users, and tasks.</li>
+                                    <li>Protected endpoints based on JWT and roles.</li>
+                                    <li>Error handling and fallback behavior in the client.</li>
+                                </ul>
+                            </div>
+
+                            <div className="info-box">
+                                <h3>Deployment</h3>
+                                <ul>
+                                    <li>Use environment variables to configure API URLs.</li>
+                                    <li>Serve frontend from production build or CDN.</li>
+                                    <li>Secure backend with HTTPS and proper CORS settings.</li>
+                                </ul>
+                            </div>
+
+                            <div className="section">
+                                <button className="button" onClick={loadTasks} disabled={loading}>{loading ? 'Refreshing...' : 'Refresh Data'}</button>
+                                <button className="button secondary" onClick={logout}>Logout</button>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FullStackIntegration />, document.getElementById('root'));
+    </script>
+</body>
+</html>

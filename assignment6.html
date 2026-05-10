@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Calculator - Console Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .display {
+            width: 100%;
+            height: 60px;
+            font-size: 28px;
+            text-align: right;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            height: 60px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .btn-number {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-number:hover {
+            background: #e0e0e0;
+        }
+        .btn-operator {
+            background: #667eea;
+            color: white;
+        }
+        .btn-operator:hover {
+            background: #5a6fd6;
+        }
+        .btn-equal {
+            background: #764ba2;
+            color: white;
+            grid-column: span 2;
+        }
+        .btn-clear {
+            background: #ff6b6b;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #ff5252;
+        }
+        .console-info {
+            margin-top: 30px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .console-info h3 {
+            color: #4ec9b0;
+            margin-bottom: 10px;
+        }
+        .console-info code {
+            color: #ce9178;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🧮 JS Calculator</h1>
+        <p>Open Console (F12) to see calculation logs!</p>
+        
+        <input type="text" id="display" class="display" readonly>
+        
+        <div class="buttons">
+            <button class="btn-clear" onclick="clearDisplay()">C</button>
+            <button class="btn-operator" onclick="addValue('(')">(</button>
+            <button class="btn-operator" onclick="addValue(')')">)</button>
+            <button class="btn-operator" onclick="addValue('/')">÷</button>
+            
+            <button class="btn-number" onclick="addValue('7')">7</button>
+            <button class="btn-number" onclick="addValue('8')">8</button>
+            <button class="btn-number" onclick="addValue('9')">9</button>
+            <button class="btn-operator" onclick="addValue('*')">×</button>
+            
+            <button class="btn-number" onclick="addValue('4')">4</button>
+            <button class="btn-number" onclick="addValue('5')">5</button>
+            <button class="btn-number" onclick="addValue('6')">6</button>
+            <button class="btn-operator" onclick="addValue('-')">−</button>
+            
+            <button class="btn-number" onclick="addValue('1')">1</button>
+            <button class="btn-number" onclick="addValue('2')">2</button>
+            <button class="btn-number" onclick="addValue('3')">3</button>
+            <button class="btn-operator" onclick="addValue('+')">+</button>
+            
+            <button class="btn-number" onclick="addValue('0')">0</button>
+            <button class="btn-number" onclick="addValue('.')">.</button>
+            <button class="btn-equal" onclick="calculate()">=</button>
+        </div>
+
+        <div class="console-info">
+            <h3>📋 Console Programs</h3>
+            <p>Try these in Console (F12):</p>
+            <code>
+            // Basic operations<br>
+            add(10, 5)      // Addition<br>
+            subtract(10, 5) // Subtraction<br>
+            multiply(10, 5) // Multiplication<br>
+            divide(10, 5)    // Division<br>
+            <br>
+            // Advanced<br>
+            power(2, 8)     // Power<br>
+            squareRoot(64)  // Square Root<br>
+            factorial(5)    // Factorial<br>
+            <br>
+            // Calculator function<br>
+            calc("10 + 5 * 2")
+            </code>
+        </div>
+    </div>
+
+    <script>
+        // Console Calculator Programs
+        
+        function addValue(value) {
+            document.getElementById("display").value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById("display").value = "";
+            console.log("Display cleared!");
+        }
+
+        function calculate() {
+            let expression = document.getElementById("display").value;
+            try {
+                if (!expression) {
+                    console.log("No expression to calculate!");
+                    return;
+                }
+                let result = eval(expression);
+                console.log(`Calculation: ${expression} = ${result}`);
+                document.getElementById("display").value = result;
+            } catch (error) {
+                console.log("Error: Invalid expression!");
+                document.getElementById("display").value = "Error";
+            }
+        }
+
+        // Console Functions (Type these in Console)
+
+        // Addition
+        function add(a, b) {
+            let result = a + b;
+            console.log(`➕ ${a} + ${b} = ${result}`);
+            return result;
+        }
+
+        // Subtraction
+        function subtract(a, b) {
+            let result = a - b;
+            console.log(`➖ ${a} - ${b} = ${result}`);
+            return result;
+        }
+
+        // Multiplication
+        function multiply(a, b) {
+            let result = a * b;
+            console.log(`✖️ ${a} × ${b} = ${result}`);
+            return result;
+        }
+
+        // Division
+        function divide(a, b) {
+            if (b === 0) {
+                console.log("❌ Cannot divide by zero!");
+                return undefined;
+            }
+            let result = a / b;
+            console.log(`➗ ${a} ÷ ${b} = ${result}`);
+            return result;
+        }
+
+        // Power
+        function power(base, exp) {
+            let result = Math.pow(base, exp);
+            console.log(`🔢 ${base}^${exp} = ${result}`);
+            return result;
+        }
+
+        // Square Root
+        function squareRoot(num) {
+            if (num < 0) {
+                console.log("❌ Cannot find square root of negative number!");
+                return undefined;
+            }
+            let result = Math.sqrt(num);
+            console.log(`√${num} = ${result}`);
+            return result;
+        }
+
+        // Factorial
+        function factorial(n) {
+            if (n < 0) {
+                console.log("❌ Factorial not defined for negative numbers!");
+                return undefined;
+            }
+            if (n === 0 || n === 1) {
+                console.log(`!${n} = 1`);
+                return 1;
+            }
+            let result = 1;
+            let calculation = "";
+            for (let i = n; i >= 1; i--) {
+                result *= i;
+                calculation += i + (i > 1 ? " × " : "");
+            }
+            console.log(`${n}! = ${calculation} = ${result}`);
+            return result;
+        }
+
+        // Universal Calculator Function
+        function calc(expression) {
+            try {
+                let result = eval(expression);
+                console.log(`📱 calc("${expression}") = ${result}`);
+                return result;
+            } catch (error) {
+                console.log("❌ Invalid expression!");
+                return undefined;
+            }
+        }
+
+        // Welcome Message
+        console.log("%c🧮 Calculator Console Programs Loaded!", "color: #667eea; font-size: 20px; font-weight: bold;");
+        console.log("%cTry these functions:", "color: #4ec9b0; font-weight: bold;");
+        console.log("• add(10, 5) - Addition");
+        console.log("• subtract(10, 5) - Subtraction");
+        console.log("• multiply(10, 5) - Multiplication");
+        console.log("• divide(10, 5) - Division");
+        console.log("• power(2, 8) - Power");
+        console.log("• squareRoot(64) - Square Root");
+        console.log("• factorial(5) - Factorial");
+        console.log("• calc('10 + 5 * 2') - Universal");
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 19: React Authentication Setup</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+        }
+        .auth-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .auth-header h1 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .auth-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .auth-form {
+            padding: 30px 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        .auth-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .auth-button:hover {
+            transform: translateY(-2px);
+        }
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+        }
+        .auth-toggle button {
+            background: none;
+            border: none;
+            color: #4facfe;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const AuthApp = () => {
+            const [isLogin, setIsLogin] = useState(true);
+            const [formData, setFormData] = useState({
+                email: '',
+                password: '',
+                name: ''
+            });
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState('');
+            const [messageType, setMessageType] = useState('');
+
+            // Backend API base URL (demo mode)
+            const API_BASE = 'demo://localhost';
+
+            const handleInputChange = (e) => {
+                setFormData({
+                    ...formData,
+                    [e.target.name]: e.target.value
+                });
+            };
+
+            const showMessage = (text, type) => {
+                setMessage(text);
+                setMessageType(type);
+                setTimeout(() => {
+                    setMessage('');
+                    setMessageType('');
+                }, 5000);
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setMessage('');
+
+                try {
+                    // Demo authentication using localStorage (Full Stack Web Development)
+                    if (isLogin) {
+                        // Simulate login check
+                        const demoUsers = JSON.parse(localStorage.getItem('demoUsers') || '[]');
+                        const user = demoUsers.find(u => u.email === formData.email && u.password === formData.password);
+
+                        if (user) {
+                            const token = `demo-jwt-${Date.now()}-${user.id}`;
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify({ id: user.id, name: user.name, email: user.email, role: user.role }));
+                            showMessage(`Welcome back, ${user.name}!`, 'success');
+                        } else {
+                            showMessage('Invalid email or password', 'error');
+                        }
+                    } else {
+                        // Simulate registration
+                        const demoUsers = JSON.parse(localStorage.getItem('demoUsers') || '[]');
+                        const existingUser = demoUsers.find(u => u.email === formData.email);
+
+                        if (existingUser) {
+                            showMessage('User already exists with this email', 'error');
+                        } else {
+                            const newUser = {
+                                id: Date.now(),
+                                name: formData.name,
+                                email: formData.email,
+                                password: formData.password,
+                                role: 'user'
+                            };
+                            demoUsers.push(newUser);
+                            localStorage.setItem('demoUsers', JSON.stringify(demoUsers));
+
+                            // Auto login after registration
+                            const token = `demo-jwt-${Date.now()}-${newUser.id}`;
+                            localStorage.setItem('token', token);
+                            localStorage.setItem('user', JSON.stringify({ id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role }));
+
+                            showMessage('Account created successfully!', 'success');
+                        }
+                    }
+
+                    // Reset form
+                    setFormData({ email: '', password: '', name: '' });
+                } catch (error) {
+                    console.error('Auth error:', error);
+                    showMessage('Authentication failed. Please try again.', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const toggleMode = () => {
+                setIsLogin(!isLogin);
+                setMessage('');
+                setFormData({ email: '', password: '', name: '' });
+            };
+
+            return (
+                <div className="auth-container">
+                    <div className="auth-header">
+                        <h1>{isLogin ? '🔐 Login' : '📝 Sign Up'}</h1>
+                        <p>Assignment 19: React Authentication Setup</p>
+                    </div>
+
+                    <form className="auth-form" onSubmit={handleSubmit}>
+                        {message && (
+                            <div className={`message ${messageType}`}>
+                                {message}
+                            </div>
+                        )}
+
+                        {!isLogin && (
+                            <div className="form-group">
+                                <label htmlFor="name">Full Name</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    required={!isLogin}
+                                    placeholder="Enter your full name"
+                                />
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label htmlFor="email">Email Address</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                                placeholder="Enter your email"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                required
+                                placeholder="Enter your password"
+                                minLength="6"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="auth-button"
+                            disabled={loading}
+                        >
+                            {loading && <span className="loading"></span>}
+                            {loading
+                                ? (isLogin ? 'Signing In...' : 'Creating Account...')
+                                : (isLogin ? 'Sign In' : 'Create Account')
+                            }
+                        </button>
+
+                        <div className="auth-toggle">
+                            <button type="button" onClick={toggleMode}>
+                                {isLogin
+                                    ? "Don't have an account? Sign Up"
+                                    : "Already have an account? Sign In"
+                                }
+                            </button>
+                        </div>
+                    </form>
+
+                    <div style={{
+                        padding: '20px',
+                        background: '#f8f9fa',
+                        borderTop: '1px solid #e1e5e9',
+                        fontSize: '12px',
+                        color: '#666'
+                    }}>
+                        <h3>🔧 Demo Configuration:</h3>
+                        <ul style={{ margin: '10px 0', paddingLeft: '20px' }}>
+                            <li>User data stored in browser localStorage</li>
+                            <li>No backend server required</li>
+                            <li>Demo JWT tokens generated locally</li>
+                        </ul>
+                        <p><strong>Note:</strong> This works completely offline for Full Stack Web Development learning.</p>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AuthApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Component Breakdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #ff0000;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .component {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ff0000;
+        }
+        .component h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .component ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .component li {
+            color: #666;
+            margin: 5px 0;
+        }
+        .structure {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Component Breakdown</h1>
+
+    <h2>Main Components</h2>
+    
+    <div class="component">
+        <h3>1. Header</h3>
+        <ul>
+            <li>Logo</li>
+            <li>Search bar</li>
+            <li>Create button</li>
+            <li>Notifications</li>
+            <li>User avatar</li>
+        </ul>
+    </div>
+
+    <div class="component">
+        <h3>2. Sidebar</h3>
+        <ul>
+            <li>Home</li>
+            <li>Shorts</li>
+            <li>Subscriptions</li>
+            <li>Library</li>
+            <li>History</li>
+        </ul>
+    </div>
+
+    <div class="component">
+        <h3>3. Video Card</h3>
+        <ul>
+            <li>Thumbnail</li>
+            <li>Duration</li>
+            <li>Title</li>
+            <li>Channel name</li>
+            <li>Views + date</li>
+        </ul>
+    </div>
+
+    <div class="component">
+        <h3>4. Video Player Page</h3>
+        <ul>
+            <li>Video player</li>
+            <li>Like/Share/Save buttons</li>
+            <li>Channel info + Subscribe</li>
+            <li>Comments</li>
+            <li>Recommended videos</li>
+        </ul>
+    </div>
+
+    <h2>Simple Structure</h2>
+    <div class="structure">
+YouTube App
+├── Header (navbar)
+├── Sidebar (navigation)
+├── Main Content
+│   ├── Category filters
+│   └── Video grid
+│       └── Video cards
+└── Video Page (when playing)
+    ├── Player
+    ├── Details
+    ├── Comments
+    └── Recommendations</div>
+
+    <h2>Key Reusable Components</h2>
+    <div class="component">
+        <ul>
+            <li><strong>VideoCard</strong> - Display video preview</li>
+            <li><strong>Comment</strong> - Single comment</li>
+            <li><strong>SearchBar</strong> - Search videos</li>
+            <li><strong>Button</strong> - Actions (like, share)</li>
+            <li><strong>Avatar</strong> - User/channel image</li>
+        </ul>
+    </div>
+</body>
+</html>

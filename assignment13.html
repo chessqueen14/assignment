@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Page React App</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, createContext, useContext } = React;
+
+        // Create a context for navigation
+        const NavigationContext = createContext();
+
+        // Custom hook for navigation
+        const useNavigation = () => useContext(NavigationContext);
+
+        // Navigation Component
+        const Navigation = ({ currentPage, onNavigate }) => {
+            const navItems = [
+                { id: 'home', label: '🏠 Home', color: '#667eea' },
+                { id: 'mood', label: '🎭 Mood Tracker', color: '#ff6b6b' },
+                { id: 'tasks', label: '📝 Task List', color: '#4ecdc4' },
+                { id: 'weather', label: '🌤️ Weather', color: '#45b7d1' },
+                { id: 'about', label: 'ℹ️ About', color: '#96ceb4' }
+            ];
+
+            return (
+                <nav style={{
+                    background: 'white',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                    padding: '15px 30px',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 100
+                }}>
+                    <div style={{
+                        maxWidth: '1200px',
+                        margin: '0 auto',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '10px'
+                    }}>
+                        <h1 style={{ 
+                            fontSize: '24px', 
+                            color: '#333',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                        }}>
+                            🚀 My React App
+                        </h1>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            {navItems.map(item => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => onNavigate(item.id)}
+                                    style={{
+                                        padding: '10px 20px',
+                                        background: currentPage === item.id ? item.color : 'transparent',
+                                        color: currentPage === item.id ? 'white' : '#666',
+                                        border: `2px solid ${item.color}`,
+                                        borderRadius: '25px',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </nav>
+            );
+        };
+
+        // Home Page Component
+        const HomePage = () => (
+            <div style={{ padding: '60px 20px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                <div style={{ 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: '20px',
+                    padding: '60px 40px',
+                    color: 'white',
+                    marginBottom: '40px'
+                }}>
+                    <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>Welcome to My React App! 🎉</h1>
+                    <p style={{ fontSize: '20px', opacity: 0.9 }}>
+                        A multi-page Single Page Application built with React
+                    </p>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                    <div style={cardStyle}>
+                        <div style={{ fontSize: '40px' }}>🎭</div>
+                        <h3 style={{ margin: '15px 0 10px', color: '#333' }}>Mood Tracker</h3>
+                        <p style={{ color: '#666' }}>Track your daily moods with colorful emojis</p>
+                    </div>
+                    <div style={cardStyle}>
+                        <div style={{ fontSize: '40px' }}>📝</div>
+                        <h3 style={{ margin: '15px 0 10px', color: '#333' }}>Task List</h3>
+                        <p style={{ color: '#666' }}>Manage your tasks with add and delete features</p>
+                    </div>
+                    <div style={cardStyle}>
+                        <div style={{ fontSize: '40px' }}>🌤️</div>
+                        <h3 style={{ margin: '15px 0 10px', color: '#333' }}>Weather</h3>
+                        <p style={{ color: '#666' }}>Check weather for any city worldwide</p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const cardStyle = {
+            background: 'white',
+            padding: '30px',
+            borderRadius: '15px',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+            transition: 'transform 0.3s'
+        };
+
+        // Mood Tracker Page (simplified version)
+        const MoodTrackerPage = () => {
+            const [selectedMood, setSelectedMood] = useState(null);
+            const moods = [
+                { id: 'happy', emoji: '😊', label: 'Happy', color: '#FFD700' },
+                { id: 'sad', emoji: '😢', label: 'Sad', color: '#6495ED' },
+                { id: 'angry', emoji: '😠', label: 'Angry', color: '#FF4500' },
+                { id: 'calm', emoji: '😌', label: 'Calm', color: '#98FB98' },
+                { id: 'excited', emoji: '🤩', label: 'Excited', color: '#FF69B4' },
+                { id: 'grateful', emoji: '🙏', label: 'Grateful', color: '#20B2AA' },
+            ];
+
+            return (
+                <div style={{ padding: '40px 20px', maxWidth: '600px', margin: '0 auto' }}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>🎭 Mood Tracker</h2>
+                    <div style={{ 
+                        background: selectedMood ? selectedMood.color + '30' : 'white',
+                        padding: '30px',
+                        borderRadius: '20px',
+                        transition: 'background 0.5s',
+                        marginBottom: '20px'
+                    }}>
+                        <p style={{ textAlign: 'center', marginBottom: '25px', color: '#666' }}>How are you feeling today?</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                            {moods.map(mood => (
+                                <button
+                                    key={mood.id}
+                                    onClick={() => setSelectedMood(mood)}
+                                    style={{
+                                        padding: '20px',
+                                        fontSize: '32px',
+                                        border: selectedMood?.id === mood.id ? `3px solid ${mood.color}` : '2px solid #ddd',
+                                        borderRadius: '15px',
+                                        background: selectedMood?.id === mood.id ? mood.color + '50' : 'white',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s'
+                                    }}
+                                >
+                                    <div>{mood.emoji}</div>
+                                    <div style={{ fontSize: '14px', marginTop: '5px', color: '#555' }}>{mood.label}</div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    {selectedMood && (
+                        <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s' }}>
+                            <div style={{ fontSize: '60px' }}>{selectedMood.emoji}</div>
+                            <h3 style={{ color: selectedMood.color, marginTop: '10px' }}>You're feeling {selectedMood.label}!</h3>
+                        </div>
+                    )}
+                    <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+                </div>
+            );
+        };
+
+        // Task List Page (simplified version)
+        const TaskListPage = () => {
+            const [tasks, setTasks] = useState([
+                { id: 1, text: 'Learn React', completed: false },
+                { id: 2, text: 'Build a project', completed: false }
+            ]);
+            const [input, setInput] = useState('');
+
+            const addTask = () => {
+                if (!input.trim()) return;
+                setTasks([...tasks, { id: Date.now(), text: input, completed: false }]);
+                setInput('');
+            };
+
+            const deleteTask = (id) => setTasks(tasks.filter(t => t.id !== id));
+            const toggleTask = (id) => setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+
+            return (
+                <div style={{ padding: '40px 20px', maxWidth: '500px', margin: '0 auto' }}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>📝 Task List</h2>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                        <input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addTask()}
+                            placeholder="Add a task..."
+                            style={{ flex: 1, padding: '12px', fontSize: '16px', borderRadius: '8px', border: '2px solid #ddd' }}
+                        />
+                        <button onClick={addTask} style={{ padding: '12px 20px', background: '#4ecdc4', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Add</button>
+                    </div>
+                    <ul style={{ listStyle: 'none' }}>
+                        {tasks.map(task => (
+                            <li key={task.id} style={{ display: 'flex', alignItems: 'center', padding: '15px', background: 'white', borderRadius: '10px', marginBottom: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                                <button onClick={() => toggleTask(task.id)} style={{ width: '24px', height: '24px', borderRadius: '50%', border: task.completed ? 'none' : '2px solid #4ecdc4', background: task.completed ? '#4ecdc4' : 'transparent', marginRight: '15px', cursor: 'pointer' }}>
+                                    {task.completed && '✓'}
+                                </button>
+                                <span style={{ flex: 1, textDecoration: task.completed ? 'line-through' : 'none', color: task.completed ? '#999' : '#333' }}>{task.text}</span>
+                                <button onClick={() => deleteTask(task.id)} style={{ padding: '8px 12px', background: '#ff6b6b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Delete</button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            );
+        };
+
+        // Weather Page (simplified version)
+        const WeatherPage = () => {
+            const [city, setCity] = useState('New York');
+            const [weather, setWeather] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+
+            const fetchWeather = async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+                    const geoData = await geoRes.json();
+                    if (!geoData.results) throw new Error('City not found');
+                    const { latitude, longitude, name, country } = geoData.results[0];
+                    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+                    const data = await weatherRes.json();
+                    setWeather({ current: data.current_weather, location: { name, country } });
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            useEffect(() => { fetchWeather(); }, []);
+
+            const getIcon = (code) => code <= 3 ? '☀️' : code <= 48 ? '🌫️' : code <= 67 ? '🌧️' : '⛈️';
+
+            return (
+                <div style={{ padding: '40px 20px', maxWidth: '500px', margin: '0 auto' }}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>🌤️ Weather</h2>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                        <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Enter city..." style={{ flex: 1, padding: '12px', fontSize: '16px', borderRadius: '8px', border: '2px solid #ddd' }} />
+                        <button onClick={fetchWeather} style={{ padding: '12px 20px', background: '#45b7d1', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Search</button>
+                    </div>
+                    {loading && <div style={{ textAlign: 'center', padding: '40px' }}>🌍 Loading...</div>}
+                    {error && <div style={{ textAlign: 'center', padding: '20px', background: '#ffe5e5', borderRadius: '10px', color: '#ff4757' }}>⚠️ {error}</div>}
+                    {weather && !loading && !error && (
+                        <div style={{ textAlign: 'center', padding: '30px', background: 'linear-gradient(135deg, #667eea, #764ba2)', borderRadius: '15px', color: 'white' }}>
+                            <h3>{weather.location.name}, {weather.location.country}</h3>
+                            <div style={{ fontSize: '60px', margin: '15px 0' }}>{getIcon(weather.current.weathercode)}</div>
+                            <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{Math.round(weather.current.temperature)}°C</div>
+                            <div style={{ marginTop: '10px' }}>💨 Wind: {weather.current.windspeed} km/h</div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // About Page
+        const AboutPage = () => (
+            <div style={{ padding: '60px 20px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                <h2 style={{ marginBottom: '30px', color: '#333' }}>ℹ️ About This App</h2>
+                <div style={{ background: 'white', padding: '40px', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
+                    <div style={{ fontSize: '60px', marginBottom: '20px' }}>🚀</div>
+                    <h3 style={{ marginBottom: '15px', color: '#333' }}>Multi-Page React SPA</h3>
+                    <p style={{ color: '#666', lineHeight: '1.8', marginBottom: '20px' }}>
+                        This is a Single Page Application built with React that demonstrates multiple pages 
+                        using client-side routing. Each page is a component that gets rendered based on the 
+                        current navigation state.
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', marginTop: '30px' }}>
+                        <span style={tagStyle}>React 18</span>
+                        <span style={tagStyle}>useState</span>
+                        <span style={tagStyle}>useEffect</span>
+                        <span style={tagStyle}>Context API</span>
+                        <span style={tagStyle}>SPA Routing</span>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const tagStyle = {
+            padding: '8px 16px',
+            background: '#667eea',
+            color: 'white',
+            borderRadius: '20px',
+            fontSize: '14px'
+        };
+
+        // Main App Component with Router
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState('home');
+
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 'home': return <HomePage />;
+                    case 'mood': return <MoodTrackerPage />;
+                    case 'tasks': return <TaskListPage />;
+                    case 'weather': return <WeatherPage />;
+                    case 'about': return <AboutPage />;
+                    default: return <HomePage />;
+                }
+            };
+
+            return (
+                <NavigationContext.Provider value={{ currentPage, navigate: setCurrentPage }}>
+                    <div>
+                        <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+                        <div style={{ minHeight: 'calc(100vh - 70px)' }}>
+                            {renderPage()}
+                        </div>
+                        <footer style={{ textAlign: 'center', padding: '20px', color: '#999', background: 'white', marginTop: '40px' }}>
+                            © 2024 My React App. Built with ❤️ using React.
+                        </footer>
+                    </div>
+                </NavigationContext.Provider>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 18: Connect the Stack - Task Manager Frontend</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const TaskManagerApp = () => {
+            const [backendStatus, setBackendStatus] = useState('Checking...');
+            const [tasks, setTasks] = useState([]);
+            const [loading, setLoading] = useState(false);
+
+            // Backend API base URL (demo - using localStorage)
+            const API_BASE = 'demo://localhost';
+
+            useEffect(() => {
+                checkBackendConnection();
+            }, []);
+
+            const checkBackendConnection = async () => {
+                // Simulate backend check for demo purposes
+                setTimeout(() => {
+                    setBackendStatus('✅ Full Stack Web Development Demo - No Backend Required');
+                }, 500);
+            };
+
+            const fetchTasks = async () => {
+                setLoading(true);
+                try {
+                    // Use localStorage for demo purposes (Full Stack Web Development)
+                    const storedTasks = localStorage.getItem('demoTasks');
+                    if (storedTasks) {
+                        setTasks(JSON.parse(storedTasks));
+                    } else {
+                        const demoTasks = [
+                            { id: 1, title: 'Complete React Frontend Setup', description: 'Set up React components and routing structure', completed: false },
+                            { id: 2, title: 'Implement Authentication UI', description: 'Create login/register forms with validation', completed: false },
+                            { id: 3, title: 'Build Task Management Interface', description: 'Design CRUD operations for tasks', completed: false },
+                            { id: 4, title: 'Add Role-Based Access Control', description: 'Implement admin/user role restrictions', completed: false }
+                        ];
+                        setTasks(demoTasks);
+                        localStorage.setItem('demoTasks', JSON.stringify(demoTasks));
+                    }
+                } catch (error) {
+                    console.error('Error loading tasks:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🚀 Task Manager Frontend</h1>
+                        <p>Assignment 18: Connect the Stack - React Frontend Setup</p>
+                    </div>
+
+                    <div className="main-content">
+                        <div className="section">
+                            <h2>🔗 Backend Connection Status</h2>
+                            <div className={`status ${backendStatus.includes('✅') ? 'success' : 'info'}`}>
+                                {backendStatus}
+                            </div>
+                            <p><strong>Demo Mode:</strong> Using localStorage for data persistence</p>
+                            <p><strong>Expected Endpoints (when backend is ready):</strong></p>
+                            <ul>
+                                <li>POST /api/auth/login - User login</li>
+                                <li>POST /api/auth/register - User registration</li>
+                                <li>GET /api/tasks - Get all tasks</li>
+                                <li>POST /api/tasks - Create new task</li>
+                                <li>PUT /api/tasks/:id - Update task</li>
+                                <li>DELETE /api/tasks/:id - Delete task</li>
+                            </ul>
+                        </div>
+
+                        <div className="section">
+                            <h2>📁 Project Structure</h2>
+                            <p>This React application is set up with the following structure:</p>
+                            <div className="code-block">
+{`task-manager-frontend/
+├── components/
+│   ├── Auth/
+│   │   ├── LoginForm.js
+│   │   ├── RegisterForm.js
+│   │   └── AuthContext.js
+│   ├── Tasks/
+│   │   ├── TaskList.js
+│   │   ├── TaskItem.js
+│   │   ├── TaskForm.js
+│   │   └── TaskContext.js
+│   ├── Layout/
+│   │   ├── Header.js
+│   │   ├── Sidebar.js
+│   │   └── Footer.js
+│   └── UI/
+│       ├── Button.js
+│       ├── Input.js
+│       └── Modal.js
+├── services/
+│   ├── api.js
+│   ├── authService.js
+│   └── taskService.js
+├── utils/
+│   ├── constants.js
+│   └── helpers.js
+├── App.js
+├── index.js
+└── styles/
+    └── main.css`}
+                            </div>
+                        </div>
+
+                        <div className="section">
+                            <h2>⚙️ Configuration</h2>
+                            <p>Key configuration files and settings:</p>
+                            <div className="code-block">
+{`// services/api.js
+const API_BASE_URL = 'http://localhost:3000/api';
+
+export const apiClient = {
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+};
+
+// utils/constants.js
+export const API_ENDPOINTS = {
+    AUTH: {
+        LOGIN: '/auth/login',
+        REGISTER: '/auth/register',
+        LOGOUT: '/auth/logout',
+    },
+    TASKS: '/tasks',
+    HEALTH: '/health',
+};
+
+// Environment variables (.env)
+REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_JWT_SECRET=your_jwt_secret`}
+                            </div>
+                        </div>
+
+                        <div className="section">
+                            <h2>🔧 Dependencies</h2>
+                            <p>Install these packages for full functionality:</p>
+                            <div className="code-block">
+{`npm install axios react-router-dom jwt-decode
+npm install --save-dev @types/react @types/react-dom`}
+                            </div>
+                            <p><strong>Current Setup:</strong> Using CDN versions of React for simplicity</p>
+                        </div>
+
+                      
+
+                        <div className="section">
+                            <h2>🧪 Test Backend Connection</h2>
+                            <button onClick={checkBackendConnection} style={{
+                                padding: '10px 20px',
+                                background: '#4facfe',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                marginRight: '10px'
+                            }}>
+                                Test Connection
+                            </button>
+                            <button onClick={fetchTasks} style={{
+                                padding: '10px 20px',
+                                background: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer'
+                            }}>
+                                Load Sample Tasks
+                            </button>
+                            {loading && <p>Loading tasks...</p>}
+                            {tasks.length > 0 && (
+                                <div style={{ marginTop: '20px' }}>
+                                    <h3>Sample Tasks:</h3>
+                                    <ul>
+                                        {tasks.map(task => (
+                                            <li key={task.id}>
+                                                <strong>{task.title}</strong>: {task.description}
+                                                {task.completed && ' ✅'}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<TaskManagerApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

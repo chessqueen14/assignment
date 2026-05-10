@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Signup Form</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SignupForm = () => {
+            const [formData, setFormData] = useState({
+                fullName: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                agreeTerms: false
+            });
+            const [errors, setErrors] = useState({});
+            const [touched, setTouched] = useState({});
+            const [isSubmitted, setIsSubmitted] = useState(false);
+
+            const validateEmail = (email) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            };
+
+            const validatePassword = (password) => {
+                const checks = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+                };
+                return checks;
+            };
+
+            const getPasswordStrength = (password) => {
+                if (!password) return { score: 0, label: '', color: '#ddd' };
+                const checks = validatePassword(password);
+                const score = Object.values(checks).filter(Boolean).length;
+                
+                if (score <= 2) return { score, label: 'Weak', color: '#ff4757' };
+                if (score <= 3) return { score, label: 'Fair', color: '#ffa502' };
+                if (score <= 4) return { score, label: 'Good', color: '#2ed573' };
+                return { score, label: 'Strong', color: '#1e90ff' };
+            };
+
+            const validate = (field, value) => {
+                const newErrors = { ...errors };
+                
+                switch(field) {
+                    case 'fullName':
+                        if (!value.trim()) newErrors.fullName = 'Full name is required';
+                        else if (value.trim().length < 2) newErrors.fullName = 'Name must be at least 2 characters';
+                        else delete newErrors.fullName;
+                        break;
+                    case 'email':
+                        if (!value) newErrors.email = 'Email is required';
+                        else if (!validateEmail(value)) newErrors.email = 'Please enter a valid email';
+                        else delete newErrors.email;
+                        break;
+                    case 'password':
+                        if (!value) newErrors.password = 'Password is required';
+                        else if (value.length < 8) newErrors.password = 'Password must be at least 8 characters';
+                        else delete newErrors.password;
+                        break;
+                    case 'confirmPassword':
+                        if (!value) newErrors.confirmPassword = 'Please confirm your password';
+                        else if (value !== formData.password) newErrors.confirmPassword = 'Passwords do not match';
+                        else delete newErrors.confirmPassword;
+                        break;
+                    case 'agreeTerms':
+                        if (!value) newErrors.agreeTerms = 'You must agree to the terms';
+                        else delete newErrors.agreeTerms;
+                        break;
+                }
+                
+                setErrors(newErrors);
+                return newErrors;
+            };
+
+            const handleChange = (e) => {
+                const { name, value, type, checked } = e.target;
+                const newValue = type === 'checkbox' ? checked : value;
+                
+                setFormData(prev => ({ ...prev, [name]: newValue }));
+                
+                if (touched[name]) {
+                    validate(name, newValue);
+                }
+            };
+
+            const handleBlur = (e) => {
+                const { name, value, type, checked } = e.target;
+                const newValue = type === 'checkbox' ? checked : value;
+                setTouched(prev => ({ ...prev, [name]: true }));
+                validate(name, newValue);
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                
+                // Validate all fields
+                const allTouched = {
+                    fullName: true,
+                    email: true,
+                    password: true,
+                    confirmPassword: true,
+                    agreeTerms: true
+                };
+                setTouched(allTouched);
+                
+                validate('fullName', formData.fullName);
+                validate('email', formData.email);
+                validate('password', formData.password);
+                validate('confirmPassword', formData.confirmPassword);
+                validate('agreeTerms', formData.agreeTerms);
+                
+                // Check if form is valid
+                const hasErrors = Object.keys(formData).some(key => {
+                    if (key === 'agreeTerms') return !formData[key];
+                    return !formData[key] || validate(key, formData[key])[key];
+                });
+                
+                if (!hasErrors && Object.keys(errors).length === 0) {
+                    setIsSubmitted(true);
+                }
+            };
+
+            const passwordStrength = getPasswordStrength(formData.password);
+            const passwordChecks = validatePassword(formData.password);
+
+            if (isSubmitted) {
+                return (
+                    <div style={{
+                        maxWidth: '500px',
+                        margin: '0 auto',
+                        background: 'white',
+                        borderRadius: '20px',
+                        padding: '60px 40px',
+                        textAlign: 'center',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+                    }}>
+                        <div style={{ fontSize: '80px', marginBottom: '20px' }}>🎉</div>
+                        <h2 style={{ color: '#2ed573', marginBottom: '15px' }}>Registration Successful!</h2>
+                        <p style={{ color: '#666', marginBottom: '10px' }}>Welcome, {formData.fullName}!</p>
+                        <p style={{ color: '#999' }}>We've sent a confirmation email to <strong>{formData.email}</strong></p>
+                        <button 
+                            onClick={() => { setIsSubmitted(false); setFormData({ fullName: '', email: '', password: '', confirmPassword: '', agreeTerms: false }); setTouched({}); setErrors({}); }}
+                            style={{
+                                marginTop: '30px',
+                                padding: '15px 30px',
+                                background: '#667eea',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '10px',
+                                cursor: 'pointer',
+                                fontSize: '16px'
+                            }}
+                        >
+                            Register Another Account
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div style={{
+                    maxWidth: '500px',
+                    margin: '0 auto',
+                    background: 'white',
+                    borderRadius: '20px',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        padding: '30px',
+                        textAlign: 'center'
+                    }}>
+                        <h1 style={{ color: 'white', fontSize: '28px' }}>📝 Smart Signup</h1>
+                        <p style={{ color: 'rgba(255,255,255,0.8)', marginTop: '5px' }}>Create your account</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} style={{ padding: '30px' }}>
+                        {/* Full Name */}
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: '#333', fontWeight: 'bold' }}>
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                name="fullName"
+                                value={formData.fullName}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                placeholder="Enter your full name"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px',
+                                    fontSize: '16px',
+                                    border: touched.fullName && errors.fullName ? '2px solid #ff4757' : '2px solid #e0e0e0',
+                                    borderRadius: '10px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.3s'
+                                }}
+                            />
+                            {touched.fullName && errors.fullName && (
+                                <p style={{ color: '#ff4757', fontSize: '14px', marginTop: '5px' }}>⚠️ {errors.fullName}</p>
+                            )}
+                        </div>
+
+                        {/* Email */}
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: '#333', fontWeight: 'bold' }}>
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                placeholder="Enter your email"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px',
+                                    fontSize: '16px',
+                                    border: touched.email && errors.email ? '2px solid #ff4757' : '2px solid #e0e0e0',
+                                    borderRadius: '10px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.3s'
+                                }}
+                            />
+                            {touched.email && errors.email && (
+                                <p style={{ color: '#ff4757', fontSize: '14px', marginTop: '5px' }}>⚠️ {errors.email}</p>
+                            )}
+                        </div>
+
+                        {/* Password */}
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: '#333', fontWeight: 'bold' }}>
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                placeholder="Create a password"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px',
+                                    fontSize: '16px',
+                                    border: touched.password && errors.password ? '2px solid #ff4757' : '2px solid #e0e0e0',
+                                    borderRadius: '10px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.3s'
+                                }}
+                            />
+                            
+                            {/* Password Strength Indicator */}
+                            {formData.password && (
+                                <div style={{ marginTop: '15px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                        <span style={{ fontSize: '14px', color: '#666' }}>Password Strength:</span>
+                                        <span style={{ fontSize: '14px', fontWeight: 'bold', color: passwordStrength.color }}>
+                                            {passwordStrength.label}
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '5px', marginBottom: '10px' }}>
+                                        {[1, 2, 3, 4, 5].map(level => (
+                                            <div key={level} style={{
+                                                flex: 1,
+                                                height: '6px',
+                                                borderRadius: '3px',
+                                                background: level <= passwordStrength.score ? passwordStrength.color : '#e0e0e0',
+                                                transition: 'background 0.3s'
+                                            }} />
+                                        ))}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: '#999' }}>
+                                        {touched.password && errors.password && (
+                                            <p style={{ color: '#ff4757', marginBottom: '8px' }}>⚠️ {errors.password}</p>
+                                        )}
+                                        <ul style={{ listStyle: 'none' }}>
+                                            <li style={{ color: passwordChecks.length ? '#2ed573' : '#999', marginBottom: '3px' }}>
+                                                {passwordChecks.length ? '✓' : '○'} At least 8 characters
+                                            </li>
+                                            <li style={{ color: passwordChecks.uppercase ? '#2ed573' : '#999', marginBottom: '3px' }}>
+                                                {passwordChecks.uppercase ? '✓' : '○'} One uppercase letter
+                                            </li>
+                                            <li style={{ color: passwordChecks.lowercase ? '#2ed573' : '#999', marginBottom: '3px' }}>
+                                                {passwordChecks.lowercase ? '✓' : '○'} One lowercase letter
+                                            </li>
+                                            <li style={{ color: passwordChecks.number ? '#2ed573' : '#999', marginBottom: '3px' }}>
+                                                {passwordChecks.number ? '✓' : '○'} One number
+                                            </li>
+                                            <li style={{ color: passwordChecks.special ? '#2ed573' : '#999' }}>
+                                                {passwordChecks.special ? '✓' : '○'} One special character
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Confirm Password */}
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: '#333', fontWeight: 'bold' }}>
+                                Confirm Password
+                            </label>
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                placeholder="Confirm your password"
+                                style={{
+                                    width: '100%',
+                                    padding: '14px',
+                                    fontSize: '16px',
+                                    border: touched.confirmPassword && errors.confirmPassword ? '2px solid #ff4757' : '2px solid #e0e0e0',
+                                    borderRadius: '10px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.3s'
+                                }}
+                            />
+                            {touched.confirmPassword && errors.confirmPassword && (
+                                <p style={{ color: '#ff4757', fontSize: '14px', marginTop: '5px' }}>⚠️ {errors.confirmPassword}</p>
+                            )}
+                            {formData.confirmPassword && !errors.confirmPassword && touched.confirmPassword && (
+                                <p style={{ color: '#2ed573', fontSize: '14px', marginTop: '5px' }}>✓ Passwords match</p>
+                            )}
+                        </div>
+
+                        {/* Terms Checkbox */}
+                        <div style={{ marginBottom: '25px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    name="agreeTerms"
+                                    checked={formData.agreeTerms}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    style={{ width: '20px', height: '20px', marginRight: '10px' }}
+                                />
+                                <span style={{ color: '#666' }}>I agree to the <a href="#" style={{ color: '#667eea' }}>Terms of Service</a> and <a href="#" style={{ color: '#667eea' }}>Privacy Policy</a></span>
+                            </label>
+                            {touched.agreeTerms && errors.agreeTerms && (
+                                <p style={{ color: '#ff4757', fontSize: '14px', marginTop: '5px' }}>⚠️ {errors.agreeTerms}</p>
+                            )}
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            style={{
+                                width: '100%',
+                                padding: '16px',
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '10px',
+                                fontSize: '18px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                transition: 'transform 0.2s, box-shadow 0.2s'
+                            }}
+                        >
+                            Create Account
+                        </button>
+
+                        <p style={{ textAlign: 'center', marginTop: '20px', color: '#666' }}>
+                            Already have an account? <a href="#" style={{ color: '#667eea', fontWeight: 'bold' }}>Sign in</a>
+                        </p>
+                    </form>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SignupForm />);
+    </script>
+</body>
+</html>

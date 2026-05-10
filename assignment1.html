@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume - Yashaswi K</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .header .title {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+        }
+        .contact-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #2c3e50;
+            font-size: 22px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .section ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .section ul li::before {
+            content: "▸";
+            color: #3498db;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .skill-item {
+            background: #ecf0f1;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        .skill-item:hover {
+            transform: translateY(-2px);
+            background: #3498db;
+            color: white;
+        }
+        .project-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+        .project-card h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .achievement-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .achievement-card .icon {
+            font-size: 30px;
+        }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 600px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                padding: 30px 20px;
+            }
+            .content {
+                padding: 20px;
+            }
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>YASHASWI K</h1>
+            <p class="title">MCA Student | Web Developer | Technology Enthusiast</p>
+            <div class="contact-info">
+                <span>📧 yashaswi@example.com</span>
+                <span>📱 +91 XXXXXXXXXX</span>
+                <span>📍 Mangalore, Karnataka, India</span>
+                <span>🔗 linkedin.com/in/yashaswi</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>Career Objective</h2>
+                <p>
+                    To build a successful career in the IT industry by applying my technical skills, 
+                    learning new technologies, and contributing to organizational growth. Aspiring to 
+                    work in a challenging environment that promotes professional development while 
+                    utilizing my knowledge in web development and software engineering.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Education</h2>
+                <ul>
+                    <li><strong>Master of Computer Applications (MCA)</strong><br>
+                    <em>Srinivas Institute of Technology, Mangalore</em><br>
+                    Currently Pursuing | Expected Graduation: 2026</li>
+                    <li><strong>Bachelor of Computer Applications (BCA)</strong><br>
+                    <em>Sri Rama first grade college,kalladka</em><br>
+                    Year of Completion: 2024</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Technical Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-item">HTML5</div>
+                    <div class="skill-item">CSS3</div>
+                    <div class="skill-item">JavaScript</div>
+                    <div class="skill-item">React.js</div>
+                    <div class="skill-item">C Programming</div>
+                    <div class="skill-item">Python</div>
+                    <div class="skill-item">MySQL</div>
+                    <div class="skill-item">Git/GitHub</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Projects</h2>
+                <div class="project-card">
+                    <h3>🏫 College Event Management System</h3>
+                    <p>A web-based application for managing college events, registrations, and schedules. 
+                    Built using HTML, CSS, JavaScript, and MySQL database.</p>
+                </div>
+                <div class="project-card">
+                    <h3>🌐 Personal Portfolio Website</h3>
+                    <p>A responsive portfolio website showcasing skills, projects, and resume. 
+                    Created using modern HTML, CSS, and JavaScript.</p>
+                </div>
+                <div class="project-card">
+                    <h3>🛒 E-Commerce Landing Page</h3>
+                    <p>A simple e-commerce product landing page with responsive design and 
+                    interactive elements using vanilla JavaScript.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Achievements</h2>
+                <div class="achievement-card">
+                    <span class="icon">♟️</span>
+                    <div>
+                        <strong>International Chess Player</strong><br>
+                        Won multiple medals in state and national level chess tournaments
+                    </div>
+                </div>
+                <div class="achievement-card">
+                    <span class="icon">💃</span>
+                    <div>
+                        <strong>Cultural Activities</strong><br>
+                        Active participant in dance events and cultural programs
+                    </div>
+                </div>
+            </div>
+
+            <div class="section two-column">
+                <div>
+                    <h2>Personal Details</h2>
+                    <ul>
+                        <li><strong>Name:</strong> Yashaswi K</li>
+                        <li><strong>Date of Birth:</strong> 14/12/2002</li>
+                        <li><strong>Languages:</strong> English, Kannada, Hindi</li>
+                        <li><strong>Nationality:</strong> Indian</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>Interests</h2>
+                    <ul>
+                        <li>Chess & Strategic Games</li>
+                        <li>Dance & Performing Arts</li>
+                        <li>Reading Technology Blogs</li>
+                        <li>Learning New Technologies</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Declaration</h2>
+                <p>
+                    I hereby declare that all the information furnished above is true to the best 
+                    of my knowledge and belief. I understand that any false information may lead 
+                    to disqualification of my application.
+                </p>
+                <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                    <p><strong>Place:</strong> Mangalore</p>
+                    <p><strong>Date:</strong> March 2026</p>
+                </div>
+                <p style="margin-top: 20px;"><strong>Signature:</strong> Yashaswi K</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📄 Resume of Yashaswi K | MCA Student</p>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Task List</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const TaskList = () => {
+            const [tasks, setTasks] = useState([
+                { id: 1, text: 'Learn React', completed: false },
+                { id: 2, text: 'Build a project', completed: false },
+                { id: 3, text: 'Practice coding', completed: true }
+            ]);
+            const [inputValue, setInputValue] = useState('');
+
+            const addTask = () => {
+                if (inputValue.trim() === '') return;
+                const newTask = {
+                    id: Date.now(),
+                    text: inputValue.trim(),
+                    completed: false
+                };
+                setTasks([...tasks, newTask]);
+                setInputValue('');
+            };
+
+            const deleteTask = (id) => {
+                setTasks(tasks.filter(task => task.id !== id));
+            };
+
+            const toggleTask = (id) => {
+                setTasks(tasks.map(task => 
+                    task.id === id ? { ...task, completed: !task.completed } : task
+                ));
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    addTask();
+                }
+            };
+
+            const clearAll = () => {
+                setTasks([]);
+            };
+
+            const completedCount = tasks.filter(t => t.completed).length;
+            const pendingCount = tasks.length - completedCount;
+
+            return (
+                <div style={{
+                    maxWidth: '500px',
+                    margin: '0 auto',
+                    background: 'white',
+                    borderRadius: '20px',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        padding: '30px',
+                        textAlign: 'center'
+                    }}>
+                        <h1 style={{ color: 'white', fontSize: '28px', marginBottom: '5px' }}>📝 Task List</h1>
+                        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>Stay organized, get things done!</p>
+                    </div>
+
+                    <div style={{ padding: '25px' }}>
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            marginBottom: '25px'
+                        }}>
+                            <input
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Add a new task..."
+                                style={{
+                                    flex: 1,
+                                    padding: '15px',
+                                    fontSize: '16px',
+                                    border: '2px solid #e0e0e0',
+                                    borderRadius: '10px',
+                                    outline: 'none',
+                                    transition: 'border-color 0.3s'
+                                }}
+                            />
+                            <button
+                                onClick={addTask}
+                                style={{
+                                    padding: '15px 25px',
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '10px',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    transition: 'transform 0.2s, box-shadow 0.2s'
+                                }}
+                            >
+                                Add
+                            </button>
+                        </div>
+
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginBottom: '20px',
+                            padding: '15px',
+                            background: '#f8f9fa',
+                            borderRadius: '10px'
+                        }}>
+                            <span style={{ color: '#667eea', fontWeight: 'bold' }}>
+                                ✅ Completed: {completedCount}
+                            </span>
+                            <span style={{ color: '#764ba2', fontWeight: 'bold' }}>
+                                ⏳ Pending: {pendingCount}
+                            </span>
+                        </div>
+
+                        <div style={{ minHeight: '200px' }}>
+                            {tasks.length === 0 ? (
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '40px',
+                                    color: '#999'
+                                }}>
+                                    <div style={{ fontSize: '50px', marginBottom: '15px' }}>📋</div>
+                                    <p>No tasks yet! Add one above 👆</p>
+                                </div>
+                            ) : (
+                                <ul style={{ listStyle: 'none' }}>
+                                    {tasks.map((task, index) => (
+                                        <li 
+                                            key={task.id}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                padding: '15px',
+                                                marginBottom: '10px',
+                                                background: task.completed ? '#f0f0f0' : 'white',
+                                                borderRadius: '10px',
+                                                border: '1px solid #e0e0e0',
+                                                animation: 'slideIn 0.3s ease'
+                                            }}
+                                        >
+                                            <button
+                                                onClick={() => toggleTask(task.id)}
+                                                style={{
+                                                    width: '24px',
+                                                    height: '24px',
+                                                    borderRadius: '50%',
+                                                    border: task.completed ? 'none' : '2px solid #667eea',
+                                                    background: task.completed ? '#667eea' : 'transparent',
+                                                    cursor: 'pointer',
+                                                    marginRight: '15px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    flexShrink: 0
+                                                }}
+                                            >
+                                                {task.completed && '✓'}
+                                            </button>
+                                            <span style={{
+                                                flex: 1,
+                                                textDecoration: task.completed ? 'line-through' : 'none',
+                                                color: task.completed ? '#999' : '#333',
+                                                fontSize: '16px'
+                                            }}>
+                                                {task.text}
+                                            </span>
+                                            <button
+                                                onClick={() => deleteTask(task.id)}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    background: '#ff4757',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '14px',
+                                                    transition: 'background 0.2s'
+                                                }}
+                                            >
+                                                🗑️ Delete
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        {tasks.length > 0 && (
+                            <button
+                                onClick={clearAll}
+                                style={{
+                                    width: '100%',
+                                    padding: '15px',
+                                    marginTop: '20px',
+                                    background: '#ff4757',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '10px',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s'
+                                }}
+                            >
+                                🗑️ Clear All Tasks
+                            </button>
+                        )}
+                    </div>
+
+                    <style>{`
+                        @keyframes slideIn {
+                            from {
+                                opacity: 0;
+                                transform: translateX(-20px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
+                        }
+                    `}</style>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TaskList />);
+    </script>
+</body>
+</html>

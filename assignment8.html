@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+        input.error {
+            border-color: #e74c3c;
+        }
+        input.success {
+            border-color: #27ae60;
+        }
+        .message {
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-msg {
+            color: #e74c3c;
+        }
+        .success-msg {
+            color: #27ae60;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4a90d9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #357abd;
+        }
+        #successMessage {
+            display: none;
+            text-align: center;
+            color: #27ae60;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Registration Form</h2>
+        <form id="myForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+                <div class="message error-msg" id="usernameError"></div>
+                <div class="message success-msg" id="usernameSuccess">✓ Valid</div>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Enter email">
+                <div class="message error-msg" id="emailError"></div>
+                <div class="message success-msg" id="emailSuccess">✓ Valid</div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+                <div class="message error-msg" id="passwordError"></div>
+                <div class="message success-msg" id="passwordSuccess">✓ Valid</div>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="successMessage">✓ Form submitted successfully!</div>
+    </div>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const username = document.getElementById('username');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const successMessage = document.getElementById('successMessage');
+
+        function validateField(input, errorId, successId, validationFn) {
+            const errorEl = document.getElementById(errorId);
+            const successEl = document.getElementById(successId);
+            const result = validationFn(input.value);
+
+            if (result.valid) {
+                input.classList.remove('error');
+                input.classList.add('success');
+                errorEl.style.display = 'none';
+                successEl.style.display = 'block';
+                return true;
+            } else {
+                input.classList.remove('success');
+                input.classList.add('error');
+                errorEl.textContent = result.message;
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+                return false;
+            }
+        }
+
+        username.addEventListener('input', () => {
+            validateField(username, 'usernameError', 'usernameSuccess', (value) => {
+                if (!value) return { valid: false, message: 'Username is required' };
+                if (value.length < 3) return { valid: false, message: 'Username must be 3+ characters' };
+                return { valid: true };
+            });
+        });
+
+        email.addEventListener('input', () => {
+            validateField(email, 'emailError', 'emailSuccess', (value) => {
+                if (!value) return { valid: false, message: 'Email is required' };
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return { valid: false, message: 'Invalid email format' };
+                return { valid: true };
+            });
+        });
+
+        password.addEventListener('input', () => {
+            validateField(password, 'passwordError', 'passwordSuccess', (value) => {
+                if (!value) return { valid: false, message: 'Password is required' };
+                if (value.length < 6) return { valid: false, message: 'Password must be 6+ characters' };
+                return { valid: true };
+            });
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const isUsernameValid = validateField(username, 'usernameError', 'usernameSuccess', (value) => {
+                if (!value) return { valid: false, message: 'Username is required' };
+                if (value.length < 3) return { valid: false, message: 'Username must be 3+ characters' };
+                return { valid: true };
+            });
+            
+            const isEmailValid = validateField(email, 'emailError', 'emailSuccess', (value) => {
+                if (!value) return { valid: false, message: 'Email is required' };
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return { valid: false, message: 'Invalid email format' };
+                return { valid: true };
+            });
+            
+            const isPasswordValid = validateField(password, 'passwordError', 'passwordSuccess', (value) => {
+                if (!value) return { valid: false, message: 'Password is required' };
+                if (value.length < 6) return { valid: false, message: 'Password must be 6+ characters' };
+                return { valid: true };
+            });
+
+            if (isUsernameValid && isEmailValid && isPasswordValid) {
+                form.style.display = 'none';
+                successMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
